@@ -5,7 +5,11 @@ package com.imc.intern.trading;
  */
 public class Utils
 {
-    public void calculateArbitrageOpportunity(BookDepth whole, BookDepth half1, BookDepth half2)
+    public enum ACTION{
+        NONE, TACO_TO_PARTS, PARTS_TO_TACO
+    }
+
+    public ACTION calculateArbitrageOpportunity(BookDepth whole, BookDepth half1, BookDepth half2)
     {
         boolean tacoToParts = false, partsToTaco = false;
 
@@ -26,6 +30,12 @@ public class Utils
             tacoToParts = true;
         }
 
+        if (tacoToParts)
+            return ACTION.TACO_TO_PARTS;
+        else if (partsToTaco)
+            return ACTION.PARTS_TO_TACO;
+        else
+            return ACTION.NONE;
 
     }
 }
