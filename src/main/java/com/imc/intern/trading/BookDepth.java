@@ -25,6 +25,26 @@ public class BookDepth
         return asks;
     }
 
+    public double getHighestBid()
+    {
+        return (bids.size() > 0)? bids.lastEntry().getKey() : -1;
+    }
+
+    public int getBidVolume()
+    {
+        return (bids.size() > 0)? bids.lastEntry().getValue() : 0;
+    }
+
+    public double getLowestAsk()
+    {
+        return (asks.size() > 0)? asks.firstEntry().getKey() : -1;
+    }
+
+    public int getAskVolume()
+    {
+        return (asks.size() > 0)? asks.firstEntry().getValue() : 0;
+    }
+
     public void refreshBook(double price, int volume, Side s)
     {
         TreeMap<Double, Integer> tree;

@@ -5,8 +5,27 @@ package com.imc.intern.trading;
  */
 public class Utils
 {
-    public void calculateArbitrageOpportunity()
+    public void calculateArbitrageOpportunity(BookDepth whole, BookDepth half1, BookDepth half2)
     {
+        boolean tacoToParts = false, partsToTaco = false;
+
+        double wholeAskPrice = whole.getLowestAsk();
+        double half1AskPrice = half1.getLowestAsk();
+        double half2AskPrice = half2.getLowestAsk();
+
+        double wholeBidPrice = whole.getHighestBid();
+        double half1BidPrice = half1.getHighestBid();
+        double half2BidPrice = half2.getHighestBid();
+
+        if (wholeBidPrice > half1AskPrice + half2AskPrice)
+        {
+            partsToTaco = true;
+        }
+        else if (wholeAskPrice < half1BidPrice + half2BidPrice)
+        {
+            tacoToParts = true;
+        }
+
 
     }
 }
