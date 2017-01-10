@@ -5,7 +5,10 @@ package com.imc.intern.trading;
  */
 public class Utils
 {
+    public void calculateArbitrageOpportunity()
+    {
 
+    }
 }
 
 
