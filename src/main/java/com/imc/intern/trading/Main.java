@@ -6,7 +6,7 @@ import com.imc.intern.exchange.datamodel.api.*;
 
 public class Main
 {
-    private static final String EXCHANGE_URL = "tcp://wintern.imc.com:61616";
+    private static final String EXCHANGE_URL = "tcp://54.227.125.23:61616";
     private static final String USERNAME = "ccygnus";
     private static final String PASSWORD = "height apartment tonight grain";
     private static final String BOOK = "CCY1";
@@ -23,9 +23,9 @@ public class Main
         Symbol tort = Symbol.of(TORT);
 //        Symbol ccy1 = Symbol.of(BOOK);
         ExchangeClient client = ExchangeClient.create(EXCHANGE_URL, Account.of(USERNAME), PASSWORD);
-        RemoteExchangeView remote = client.getExchangeView();
-
         client.start();
+
+        RemoteExchangeView remote = client.getExchangeView();
 
         ExchangeHandler tacoHandler = new ExchangeHandler(remote, taco);
         ExchangeHandler beefHandler = new ExchangeHandler(remote, beef);

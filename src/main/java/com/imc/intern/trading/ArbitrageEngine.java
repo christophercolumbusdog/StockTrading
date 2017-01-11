@@ -1,5 +1,6 @@
 package com.imc.intern.trading;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class ArbitrageEngine
     }
 
     //CHANGE TO PUBLIC FOR TEST, TO CHANGE BACK TO PRIVATE
+    @VisibleForTesting
     public Action calculateArbitrageOpportunity(BookDepth whole, BookDepth half1, BookDepth half2)
     {
         boolean tacoToParts = false, partsToTaco = false;
@@ -41,6 +43,15 @@ public class ArbitrageEngine
         double wholeBidPrice = whole.getHighestBid();
         double half1BidPrice = half1.getHighestBid();
         double half2BidPrice = half2.getHighestBid();
+
+//        LOGGER.info("BEST TACO ASK: " + wholeAskPrice);
+//        LOGGER.info("BEST BEEF BID: " + half1BidPrice);
+//        LOGGER.info("BEST TORT BID: " + half2BidPrice);
+//        LOGGER.info(">>>>>>>>>>>>>>>");
+//        LOGGER.info("BEST TACO BID: " + wholeBidPrice);
+//        LOGGER.info("BEST BEEF ASK: " + half1AskPrice);
+//        LOGGER.info("BEST TORT ASK: " + half2AskPrice);
+
 
         //SHOULD ADD OFFSETS TO ENSURE SAFETY IN TRADE
         if (wholeBidPrice > half1AskPrice + half2AskPrice)
@@ -74,6 +85,7 @@ public class ArbitrageEngine
         if (!isAllUpdated())
         {
             LOGGER.info("WAITING FOR BOOK UPDATE");
+            return;
         }
 
         Action decision = calculateArbitrageOpportunity(exMain.getMyBook(), exDerivative1.getMyBook(), exDerivative2.getMyBook());

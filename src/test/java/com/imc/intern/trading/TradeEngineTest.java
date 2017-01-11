@@ -52,6 +52,8 @@ public class TradeEngineTest
 
         victim.bookChangeHitter(bd);
 
+//        Mockito.when(exchangeView.createOrder()).thenReturn(1);
+
         Mockito.verify(exchangeView).createOrder(book, price, volume, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
     }
 
