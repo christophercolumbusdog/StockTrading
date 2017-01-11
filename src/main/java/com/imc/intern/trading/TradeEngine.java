@@ -9,9 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-/**
- * Created by imc on 10/01/2017.
- */
 public class TradeEngine
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -87,6 +84,16 @@ public class TradeEngine
         //Check immediate buying opportunity
         checkForBuyOp(lowestSellPrice, sellVol, TARGET_VALUE - OFFSET);
 
+    }
+
+    public void immediateBuyAttempt(BookDepth activeBook, int quantity)
+    {
+        exchangeView.createOrder(book, activeBook.getLowestAsk(), quantity, OrderType.IMMEDIATE_OR_CANCEL, Side.BUY);
+    }
+
+    public void immediateSellAttempt(BookDepth activeBook, int quantity)
+    {
+        exchangeView.createOrder(book, activeBook.getHighestBid(), quantity, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
     }
 
     private void checkForBuyOp(double lowestSellPrice, int sellVol, double threshold)

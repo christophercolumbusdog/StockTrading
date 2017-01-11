@@ -8,19 +8,33 @@ import com.imc.intern.exchange.datamodel.jms.ExposureUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by imc on 10/01/2017.
- */
 public class ExchangeHandler implements OrderBookHandler
 {
     private TradeEngine trader;
     private BookDepth myBook = new BookDepth();
+    private ArbitrageEngine arbitrageMasterRef;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public ExchangeHandler(RemoteExchangeView rev, Symbol sym)
     {
         trader = new TradeEngine(rev, sym);
+        arbitrageMasterRef = null;
+    }
+
+    public BookDepth getMyBook()
+    {
+        return myBook;
+    }
+
+    public TradeEngine getTrader()
+    {
+        return trader;
+    }
+
+    public void setArbitrageMasterRef(ArbitrageEngine arbitrageMasterRef)
+    {
+        this.arbitrageMasterRef = arbitrageMasterRef;
     }
 
     public void handleRetailState(RetailState retailState)
@@ -31,7 +45,13 @@ public class ExchangeHandler implements OrderBookHandler
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
 
-        trader.bookChangeHitter(myBook);
+        /*
+            DISABLED STANDARD HITTER, CAN BE RE-ENABLED AS NECESSARY. ARBITRAGE HANDLING TRADE.
+         */
+        //trader.bookChangeHitter(myBook);
+
+        //Checks arbitrage opportunity
+        arbitrageMasterRef.checkArbitrage();
     }
 
     //Called when anything occurs with MY trades are updated

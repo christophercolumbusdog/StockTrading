@@ -2,17 +2,7 @@ package com.imc.intern.trading;
 
 import com.imc.intern.exchange.client.ExchangeClient;
 import com.imc.intern.exchange.client.RemoteExchangeView;
-import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.*;
-import com.imc.intern.exchange.datamodel.api.Error;
-import com.imc.intern.exchange.datamodel.jms.ExposureUpdate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Main
 {
@@ -21,15 +11,38 @@ public class Main
     private static final String PASSWORD = "height apartment tonight grain";
     private static final String BOOK = "CCY1";
 
+    private static final String TACO = "CCY.TACO";
+    private static final String TORT = "CCY.TORT";
+    private static final String BEEF = "CCY.BEEF";
+
 
     public static void main(String[] args) throws Exception
     {
+        Symbol taco = Symbol.of(TACO);
+        Symbol beef = Symbol.of(BEEF);
+        Symbol tort = Symbol.of(TORT);
+//        Symbol ccy1 = Symbol.of(BOOK);
         ExchangeClient client = ExchangeClient.create(EXCHANGE_URL, Account.of(USERNAME), PASSWORD);
         RemoteExchangeView remote = client.getExchangeView();
 
-        remote.subscribe(Symbol.of(BOOK), new ExchangeHandler(remote, Symbol.of(BOOK)));
-
         client.start();
+
+        ExchangeHandler tacoHandler = new ExchangeHandler(remote, taco);
+        ExchangeHandler beefHandler = new ExchangeHandler(remote, beef);
+        ExchangeHandler tortHandler = new ExchangeHandler(remote, tort);
+
+        ArbitrageEngine arbitrageEngine = new ArbitrageEngine(tacoHandler, beefHandler, tortHandler);
+
+        tacoHandler.setArbitrageMasterRef(arbitrageEngine);
+        beefHandler.setArbitrageMasterRef(arbitrageEngine);
+        tortHandler.setArbitrageMasterRef(arbitrageEngine);
+
+
+        //remote.subscribe(ccy1, new ExchangeHandler(remote, ccy1));
+
+        remote.subscribe(taco, tacoHandler);
+        remote.subscribe(beef, beefHandler);
+        remote.subscribe(tort, tortHandler);
     }
 
 

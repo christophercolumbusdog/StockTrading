@@ -4,9 +4,6 @@ import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.RetailState;
 import java.util.TreeMap;
 
-/**
- * Created by imc on 10/01/2017.
- */
 public class BookDepth
 {
     private TreeMap<Double, Integer> bids = new TreeMap<>();
@@ -27,7 +24,7 @@ public class BookDepth
 
     public double getHighestBid()
     {
-        return (bids.size() > 0)? bids.lastEntry().getKey() : -1;
+        return (bids.size() > 0)? bids.lastEntry().getKey() : 0;
     }
 
     public int getBidVolume()
@@ -37,7 +34,7 @@ public class BookDepth
 
     public double getLowestAsk()
     {
-        return (asks.size() > 0)? asks.firstEntry().getKey() : -1;
+        return (asks.size() > 0)? asks.firstEntry().getKey() : Double.MAX_VALUE;
     }
 
     public int getAskVolume()
