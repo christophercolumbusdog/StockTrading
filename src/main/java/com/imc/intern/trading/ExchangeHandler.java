@@ -7,12 +7,14 @@ import com.imc.intern.exchange.datamodel.api.Error;
 import com.imc.intern.exchange.datamodel.jms.ExposureUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class ExchangeHandler implements OrderBookHandler
 {
     private TradeEngine trader;
     private BookDepth myBook = new BookDepth();
     private ArbitrageEngine arbitrageMasterRef;
+    private boolean updated;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -20,6 +22,17 @@ public class ExchangeHandler implements OrderBookHandler
     {
         trader = new TradeEngine(rev, sym);
         arbitrageMasterRef = null;
+        updated = false;
+    }
+
+    public void setUpdated(boolean updated)
+    {
+        this.updated = updated;
+    }
+
+    public boolean isUpdated()
+    {
+        return updated;
     }
 
     public BookDepth getMyBook()
@@ -44,6 +57,7 @@ public class ExchangeHandler implements OrderBookHandler
 
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
+        updated = true;
 
         /*
             DISABLED STANDARD HITTER, CAN BE RE-ENABLED AS NECESSARY. ARBITRAGE HANDLING TRADE.

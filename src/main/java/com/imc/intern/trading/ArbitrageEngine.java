@@ -71,15 +71,34 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
+        if (!isAllUpdated())
+        {
+            LOGGER.info("WAITING FOR BOOK UPDATE");
+        }
+
         Action decision = calculateArbitrageOpportunity(exMain.getMyBook(), exDerivative1.getMyBook(), exDerivative2.getMyBook());
 
         if (decision == Action.TACO_TO_PARTS)
         {
+            falsifyUpdatedStatus();
             exMain.getTrader().immediateBuyAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getBidVolume(), exDerivative2.getMyBook().getBidVolume()));
         }
         else if (decision == Action.PARTS_TO_TACO)
         {
+            falsifyUpdatedStatus();
             exMain.getTrader().immediateSellAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getAskVolume(), exDerivative2.getMyBook().getAskVolume()));
         }
+    }
+
+    private void falsifyUpdatedStatus()
+    {
+        exMain.setUpdated(false);
+        exDerivative1.setUpdated(false);
+        exDerivative2.setUpdated(false);
+    }
+
+    private boolean isAllUpdated()
+    {
+        return (exMain.isUpdated() && exDerivative1.isUpdated() && exDerivative2.isUpdated());
     }
 }
