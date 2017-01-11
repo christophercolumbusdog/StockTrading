@@ -72,5 +72,25 @@ public class BookDepth
         }
     }
 
+    public void subtractVolume(double price, int volume, Side s)
+    {
+        TreeMap<Double, Integer> tree;
+
+        tree = (s == Side.BUY) ? bids : asks;
+
+        int currentVolume = 0;
+
+        if (tree.containsKey(price))
+        {
+            currentVolume = tree.get(price) - volume;
+            if (currentVolume <= 0)
+            {
+                tree.remove(price);
+            }
+            else
+                tree.put(price, currentVolume);
+        }
+    }
+
 
 }

@@ -14,7 +14,10 @@ public class ExchangeHandler implements OrderBookHandler
     private TradeEngine trader;
     private BookDepth myBook = new BookDepth();
     private ArbitrageEngine arbitrageMasterRef;
-    private boolean updated;
+
+    private int position;
+
+//    private boolean updated;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -22,18 +25,19 @@ public class ExchangeHandler implements OrderBookHandler
     {
         trader = new TradeEngine(rev, sym);
         arbitrageMasterRef = null;
-        updated = false;
+//        updated = false;
+        position = 0;
     }
 
-    public void setUpdated(boolean updated)
-    {
-        this.updated = updated;
-    }
+//    public void setUpdated(boolean updated)
+//    {
+//        this.updated = updated;
+//    }
 
-    public boolean isUpdated()
-    {
-        return updated;
-    }
+//    public boolean isUpdated()
+//    {
+//        return updated;
+//    }
 
     public BookDepth getMyBook()
     {
@@ -57,7 +61,7 @@ public class ExchangeHandler implements OrderBookHandler
 
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
-        updated = true;
+//        updated = true;
 
         /*
             DISABLED STANDARD HITTER, CAN BE RE-ENABLED AS NECESSARY. ARBITRAGE HANDLING TRADE.
@@ -71,32 +75,33 @@ public class ExchangeHandler implements OrderBookHandler
     //Called when anything occurs with MY trades are updated
     public void handleExposures(ExposureUpdate exposures)
     {
-        System.out.println("Exposure handled, " + exposures.toString());
+        LOGGER.info("Exposure handled, " + exposures.toString());
     }
 
     //Called when my trade closes
     public void handleOwnTrade(OwnTrade trade)
     {
-        if (trade.getSide() == Side.BUY)
-        {
-            trader.completedBid(trade.getOrderId());
-        }
+        LOGGER.info("ORDER EXECUTED!!!");
+
         if (trade.getSide() == Side.SELL)
         {
-            trader.completedAsk(trade.getOrderId());
+            position -= trade.getVolume();
         }
-        System.out.println("ORDER EXECUTED!!!");
+        else
+        {
+            position += trade.getVolume();
+        }
     }
 
     //Called when any trade closes
     public void handleTrade(Trade trade)
     {
-        System.out.println("Trade occurred, " + trade.toString());
+        LOGGER.info("Trade occurred, " + trade.toString());
     }
 
     //Handles any errors
     public void handleError(Error error)
     {
-        System.out.println("There as an ERROR, " + error.toString());
+        LOGGER.info("There as an ERROR, " + error.toString());
     }
 }

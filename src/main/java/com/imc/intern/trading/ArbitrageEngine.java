@@ -9,7 +9,6 @@ public class ArbitrageEngine
     private ExchangeHandler exMain;
     private ExchangeHandler exDerivative1;
     private ExchangeHandler exDerivative2;
-    private int mainPosition, derivative1Position, derivative2Position;
     private double offset;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -19,9 +18,6 @@ public class ArbitrageEngine
         exMain = e1;
         exDerivative1 = e2;
         exDerivative2 = e3;
-        mainPosition = 0;
-        derivative1Position = 0;
-        derivative2Position = 0;
         offset = 0.1;
     }
 
@@ -44,13 +40,13 @@ public class ArbitrageEngine
         double half1BidPrice = half1.getHighestBid();
         double half2BidPrice = half2.getHighestBid();
 
-//        LOGGER.info("BEST TACO ASK: " + wholeAskPrice);
-//        LOGGER.info("BEST BEEF BID: " + half1BidPrice);
-//        LOGGER.info("BEST TORT BID: " + half2BidPrice);
-//        LOGGER.info(">>>>>>>>>>>>>>>");
-//        LOGGER.info("BEST TACO BID: " + wholeBidPrice);
-//        LOGGER.info("BEST BEEF ASK: " + half1AskPrice);
-//        LOGGER.info("BEST TORT ASK: " + half2AskPrice);
+        LOGGER.info("BEST TACO ASK: " + wholeAskPrice);
+        LOGGER.info("BEST BEEF BID: " + half1BidPrice);
+        LOGGER.info("BEST TORT BID: " + half2BidPrice);
+        LOGGER.info(">>>>>>>>>>>>>>>");
+        LOGGER.info("BEST TACO BID: " + wholeBidPrice);
+        LOGGER.info("BEST BEEF ASK: " + half1AskPrice);
+        LOGGER.info("BEST TORT ASK: " + half2AskPrice);
 
 
         //SHOULD ADD OFFSETS TO ENSURE SAFETY IN TRADE
@@ -82,35 +78,35 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
-        if (!isAllUpdated())
-        {
-            LOGGER.info("WAITING FOR BOOK UPDATE");
-            return;
-        }
+//        if (!isAllUpdated())
+//        {
+//            LOGGER.info("WAITING FOR BOOK UPDATE");
+//            return;
+//        }
 
         Action decision = calculateArbitrageOpportunity(exMain.getMyBook(), exDerivative1.getMyBook(), exDerivative2.getMyBook());
 
         if (decision == Action.TACO_TO_PARTS)
         {
-            falsifyUpdatedStatus();
+//            falsifyUpdatedStatus();
             exMain.getTrader().immediateBuyAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getBidVolume(), exDerivative2.getMyBook().getBidVolume()));
         }
         else if (decision == Action.PARTS_TO_TACO)
         {
-            falsifyUpdatedStatus();
+//            falsifyUpdatedStatus();
             exMain.getTrader().immediateSellAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getAskVolume(), exDerivative2.getMyBook().getAskVolume()));
         }
     }
 
-    private void falsifyUpdatedStatus()
-    {
-        exMain.setUpdated(false);
-        exDerivative1.setUpdated(false);
-        exDerivative2.setUpdated(false);
-    }
-
-    private boolean isAllUpdated()
-    {
-        return (exMain.isUpdated() && exDerivative1.isUpdated() && exDerivative2.isUpdated());
-    }
+//    private void falsifyUpdatedStatus()
+//    {
+//        exMain.setUpdated(false);
+//        exDerivative1.setUpdated(false);
+//        exDerivative2.setUpdated(false);
+//    }
+//
+//    private boolean isAllUpdated()
+//    {
+//        return (exMain.isUpdated() && exDerivative1.isUpdated() && exDerivative2.isUpdated());
+//    }
 }

@@ -10,9 +10,6 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by imc on 11/01/2017.
- */
 public class ArbitrageEngineTest
 {
 

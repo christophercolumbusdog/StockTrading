@@ -2,6 +2,7 @@ package com.imc.intern.trading;
 
 import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.OrderType;
+import com.imc.intern.exchange.datamodel.api.RetailState;
 import com.imc.intern.exchange.datamodel.api.Symbol;
 import com.imc.intern.exchange.views.ExchangeView;
 import org.slf4j.Logger;
@@ -13,11 +14,8 @@ public class TradeEngine
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    private Map<Long, Order> myBids = new HashMap<>();
-    private Map<Long, Order> myAsks = new HashMap<>();
     private ExchangeView exchangeView;
     private Symbol book;
-    private int position;
 
     private double TARGET_VALUE = 20;
     private double OFFSET = 0.1;
@@ -26,28 +24,8 @@ public class TradeEngine
     {
         exchangeView = rev;
         book = s;
-        position = 0;
     }
 
-    public void completedBid(long id)
-    {
-        myBids.remove(id);
-    }
-
-    public void completedAsk(long id)
-    {
-        myAsks.remove(id);
-    }
-
-    public void updatePosition(int change)
-    {
-        position += change;
-    }
-
-    public int getPosition()
-    {
-        return position;
-    }
 
     public void bookChangeHitter(BookDepth activeBook)
     {
@@ -88,11 +66,17 @@ public class TradeEngine
 
     public void immediateBuyAttempt(BookDepth activeBook, int quantity)
     {
+        //COULD use the "update" method of book correctness instead!!!!
+        activeBook.subtractVolume(activeBook.getLowestAsk(), quantity, Side.BUY); //Correct SIDE?
+
         exchangeView.createOrder(book, activeBook.getLowestAsk(), quantity, OrderType.IMMEDIATE_OR_CANCEL, Side.BUY);
     }
 
     public void immediateSellAttempt(BookDepth activeBook, int quantity)
     {
+        //COULD use the "update" method of book correctness instead!!!!
+        activeBook.subtractVolume(activeBook.getHighestBid(), quantity, Side.SELL);
+
         exchangeView.createOrder(book, activeBook.getHighestBid(), quantity, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
     }
 
