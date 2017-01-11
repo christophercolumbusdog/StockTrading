@@ -89,11 +89,13 @@ public class ArbitrageEngine
         if (decision == Action.TACO_TO_PARTS)
         {
 //            falsifyUpdatedStatus();
+            LOGGER.info("SENDING BID TRADE");
             exMain.getTrader().immediateBuyAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getBidVolume(), exDerivative2.getMyBook().getBidVolume()));
         }
         else if (decision == Action.PARTS_TO_TACO)
         {
 //            falsifyUpdatedStatus();
+            LOGGER.info("SENDING ASK TRADE");
             exMain.getTrader().immediateSellAttempt(exMain.getMyBook(), Math.min(exDerivative1.getMyBook().getAskVolume(), exDerivative2.getMyBook().getAskVolume()));
         }
     }

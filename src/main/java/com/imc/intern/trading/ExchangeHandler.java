@@ -7,7 +7,6 @@ import com.imc.intern.exchange.datamodel.api.Error;
 import com.imc.intern.exchange.datamodel.jms.ExposureUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 public class ExchangeHandler implements OrderBookHandler
 {
@@ -16,6 +15,7 @@ public class ExchangeHandler implements OrderBookHandler
     private ArbitrageEngine arbitrageMasterRef;
 
     private int position;
+    private double lastPriceAtPosition;
 
 //    private boolean updated;
 
@@ -27,6 +27,7 @@ public class ExchangeHandler implements OrderBookHandler
         arbitrageMasterRef = null;
 //        updated = false;
         position = 0;
+        lastPriceAtPosition = 0;
     }
 
 //    public void setUpdated(boolean updated)
@@ -86,11 +87,14 @@ public class ExchangeHandler implements OrderBookHandler
         if (trade.getSide() == Side.SELL)
         {
             position -= trade.getVolume();
+            lastPriceAtPosition = trade.getPrice();
         }
         else
         {
             position += trade.getVolume();
+            lastPriceAtPosition = trade.getPrice();
         }
+
     }
 
     //Called when any trade closes
