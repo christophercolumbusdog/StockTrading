@@ -21,6 +21,7 @@ public class ExchangeHandler implements OrderBookHandler
 
     public void handleRetailState(RetailState retailState)
     {
+        //cproctor: Might want to consider switching these to use a logger
         System.out.println(retailState);
 
         //Refreshes the book based on the new retailState

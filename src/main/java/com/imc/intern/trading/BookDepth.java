@@ -45,6 +45,7 @@ public class BookDepth
         return (asks.size() > 0)? asks.firstEntry().getValue() : 0;
     }
 
+    //cproctor: This should be private. I see that it's used in tests but those can be changed to use consumeRetailState
     public void refreshBook(double price, int volume, Side s)
     {
         TreeMap<Double, Integer> tree;
@@ -55,6 +56,10 @@ public class BookDepth
         {
             tree.remove(price);
         }
+        //cproctor: We can simplify this a little bit as such:
+        // else if (volume !=0) {
+        //  tree.put(price, volume);
+        //}
         else
         {
             if (volume == 0)

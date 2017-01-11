@@ -15,7 +15,7 @@ public class TradeEngine
 {
     private Map<Long, Order> myBids = new HashMap<Long, Order>();
     private Map<Long, Order> myAsks = new HashMap<Long, Order>();
-    private RemoteExchangeView remote;
+    private RemoteExchangeView remote; //This can be of type ExchangeView, and exchangeView might be a better name
     private Symbol book;
 
     private double TARGET_VALUE = 20;
@@ -38,9 +38,11 @@ public class TradeEngine
     }
 
 
+    //cproctor: Name can be cleaned up
     public void retailUpdateHitterV2(BookDepth activeBook)
     {
-        double lowestSellPrice = 100000;
+        double lowestSellPrice = 100000; //cproctor: What happens if our book is trading above this? Might be nice to
+        // initialize to Double.NaN or Double.MAX_VALUE
         double highestBuyPrice = 0;
         int sellVol = 0;
         int buyVol = 0;
@@ -48,6 +50,8 @@ public class TradeEngine
         TreeMap<Double, Integer> bids = activeBook.getBookBids();
         TreeMap<Double, Integer> asks = activeBook.getBookAsks();
 
+        //cproctor: is it possible that there are more opportunities that are profitable? This only looks at the first
+        //level of the book
         if (bids.size() > 0)
         {
             highestBuyPrice = bids.lastEntry().getKey();
