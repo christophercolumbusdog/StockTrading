@@ -1,10 +1,11 @@
 package com.imc.intern.trading;
 
-import com.imc.intern.exchange.client.RemoteExchangeView;
 import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.OrderType;
-import com.imc.intern.exchange.datamodel.api.RetailState;
 import com.imc.intern.exchange.datamodel.api.Symbol;
+import com.imc.intern.exchange.views.ExchangeView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -13,18 +14,22 @@ import java.util.*;
  */
 public class TradeEngine
 {
-    private Map<Long, Order> myBids = new HashMap<Long, Order>();
-    private Map<Long, Order> myAsks = new HashMap<Long, Order>();
-    private RemoteExchangeView remote; //This can be of type ExchangeView, and exchangeView might be a better name
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+    private Map<Long, Order> myBids = new HashMap<>();
+    private Map<Long, Order> myAsks = new HashMap<>();
+    private ExchangeView exchangeView;
     private Symbol book;
+    private int position;
 
     private double TARGET_VALUE = 20;
     private double OFFSET = 0.1;
 
-    public TradeEngine(RemoteExchangeView rev, Symbol s)
+    public TradeEngine(ExchangeView rev, Symbol s)
     {
-        remote = rev;
+        exchangeView = rev;
         book = s;
+        position = 0;
     }
 
     public void completedBid(long id)
@@ -37,12 +42,19 @@ public class TradeEngine
         myAsks.remove(id);
     }
 
-
-    //cproctor: Name can be cleaned up
-    public void retailUpdateHitterV2(BookDepth activeBook)
+    public void updatePosition(int change)
     {
-        double lowestSellPrice = 100000; //cproctor: What happens if our book is trading above this? Might be nice to
-        // initialize to Double.NaN or Double.MAX_VALUE
+        position += change;
+    }
+
+    public int getPosition()
+    {
+        return position;
+    }
+
+    public void bookChangeHitter(BookDepth activeBook)
+    {
+        double lowestSellPrice = Double.MAX_VALUE;
         double highestBuyPrice = 0;
         int sellVol = 0;
         int buyVol = 0;
@@ -64,10 +76,10 @@ public class TradeEngine
             sellVol = asks.firstEntry().getValue();
         }
 
-        System.out.println("Highest Buy = " + highestBuyPrice);
-        System.out.println("Buy Vol = " + buyVol);
-        System.out.println("Lowest Sell = " + lowestSellPrice);
-        System.out.println("Sell Vol = " + sellVol);
+        LOGGER.info("Highest Buy = " + highestBuyPrice);
+        LOGGER.info("Buy Vol = " + buyVol);
+        LOGGER.info("Lowest Sell = " + lowestSellPrice);
+        LOGGER.info("Sell Vol = " + sellVol);
 
         //Check immediate selling opportunity
         checkForSellOp(highestBuyPrice, buyVol, TARGET_VALUE + OFFSET);
@@ -81,8 +93,8 @@ public class TradeEngine
     {
         if (sellVol > 0 && lowestSellPrice < threshold)
         {
-            System.out.println("SUBMITTING BID");
-            remote.createOrder(book, lowestSellPrice, sellVol, OrderType.IMMEDIATE_OR_CANCEL, Side.BUY);
+            LOGGER.info("SUBMITTING BID");
+            exchangeView.createOrder(book, lowestSellPrice, sellVol, OrderType.IMMEDIATE_OR_CANCEL, Side.BUY);
         }
     }
 
@@ -90,8 +102,8 @@ public class TradeEngine
     {
         if (buyVol > 0 && highestBuyPrice > threshold)
         {
-            System.out.println("SUBMITTING ASK");
-            remote.createOrder(book, highestBuyPrice, buyVol, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
+            LOGGER.info("SUBMITTING ASK");
+            exchangeView.createOrder(book, highestBuyPrice, buyVol, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
         }
     }
 

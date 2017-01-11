@@ -21,9 +21,6 @@ public class Main
     private static final String PASSWORD = "height apartment tonight grain";
     private static final String BOOK = "CCY1";
 
-    //cproctor: looks like this can be removed! :)
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
 
     public static void main(String[] args) throws Exception
     {
