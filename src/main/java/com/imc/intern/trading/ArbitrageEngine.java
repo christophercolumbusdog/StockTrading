@@ -9,7 +9,7 @@ public class ArbitrageEngine
     private ExchangeHandler exMain;
     private ExchangeHandler exDerivative1;
     private ExchangeHandler exDerivative2;
-    private double offset;
+    private double offset; // NAJ: not being used
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -30,6 +30,7 @@ public class ArbitrageEngine
     @VisibleForTesting
     public Action calculateArbitrageOpportunity(BookDepth whole, BookDepth half1, BookDepth half2)
     {
+        // NAJ: as we spoke, we can move this out to a strategy pattern: https://en.wikipedia.org/wiki/Strategy_pattern
         boolean tacoToParts = false, partsToTaco = false;
 
         double wholeAskPrice = whole.getLowestAsk();

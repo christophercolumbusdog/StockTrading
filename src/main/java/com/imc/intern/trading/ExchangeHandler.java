@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class ExchangeHandler implements OrderBookHandler
 {
+    // NAJ: You can remove old cold and reference it in the git history, please do so.
     private TradeEngine trader;
     private BookDepth myBook = new BookDepth();
     private ArbitrageEngine arbitrageMasterRef;

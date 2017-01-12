@@ -16,7 +16,10 @@ public class Main
     private static final String TORT = "TORT";
     private static final String BEEF = "BEEF";
 
-
+    /*
+        ** Overall, looks like you're still in the process of refactoring your code. I'd continue this work. Obviously
+        * focus on functionality first, but early refactor can make later functionality easier.
+     */
     public static void main(String[] args) throws Exception
     {
         Symbol taco = Symbol.of(TACO);
@@ -44,6 +47,7 @@ public class Main
         remote.subscribe(taco, tacoHandler);
         remote.subscribe(beef, beefHandler);
         remote.subscribe(tort, tortHandler);
+
 
         client.getExchangeView().createOrder(taco, 5000, 200, OrderType.GOOD_TIL_CANCEL, Side.SELL);
     }

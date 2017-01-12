@@ -117,5 +117,6 @@ public class ArbitrageEngineTest
         victim = new ArbitrageEngine(ex1, ex2, ex3);
 
         victim.calculateArbitrageOpportunity(taco, beef, tort);
+        // NAJ: there is no validation in this test. Tests don't actually test anything?
     }
 }

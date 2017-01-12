@@ -9,6 +9,8 @@ import com.imc.intern.exchange.datamodel.api.Symbol;
  */
 public class Order
 {
+    // NAJ: Usually, classes have private members. I would make these fields private and generate getters for them all.
+    // NAJ: IntelliJ can generate these for you easier.
     public long id;
     public Symbol book;
     public int volume;

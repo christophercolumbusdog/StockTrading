@@ -12,6 +12,7 @@ import java.util.*;
 
 public class TradeEngine
 {
+    // NAJ: If this class is no longer being used, you can delete this. It is in your git history so its accessible.
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     private ExchangeView exchangeView;

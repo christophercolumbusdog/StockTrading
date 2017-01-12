@@ -10,12 +10,12 @@ public class BookDepth
     private TreeMap<Double, Integer> asks = new TreeMap<>();
 
 
-    public BookDepth() {}
+    public BookDepth() {} // NAJ: default constructors are implied in java, don't need this
 
     public TreeMap<Double, Integer> getBookBids()
     {
         return bids;
-    }
+    } // since trade engine could be deleted, these methods are removed too. Nice clean up.
 
     public TreeMap<Double, Integer> getBookAsks()
     {
@@ -42,9 +42,9 @@ public class BookDepth
         return (asks.size() > 0)? asks.firstEntry().getValue() : 0;
     }
 
-    private void refreshBook(double price, int volume, Side s)
+    private void refreshBook(double price, int volume, Side s) // NAJ: would use side instead of "s", more descriptive
     {
-        TreeMap<Double, Integer> tree;
+        TreeMap<Double, Integer> tree; // NAJ: you can define and assign tree in the same line.
 
         tree = (s == Side.BUY) ? bids : asks;
 
@@ -52,7 +52,7 @@ public class BookDepth
         {
             tree.remove(price);
         }
-        else
+        else // NAJ: else if in this scenario
         {
             if (volume != 0)
                 tree.put(price, volume);
