@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeMap;
 
 public class ExchangeHandler implements OrderBookHandler
 {
@@ -23,8 +21,6 @@ public class ExchangeHandler implements OrderBookHandler
     private int position;
     private double lastTradedPrice;
 
-    private TreeMap<Double, Integer> pendingOrders;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public ExchangeHandler(RemoteExchangeView rev, Symbol sym)
@@ -32,7 +28,6 @@ public class ExchangeHandler implements OrderBookHandler
         trader = new TradeEngine(rev, sym);
         arbitrageMasterRef = null;
         position = 0;
-        pendingOrders = new TreeMap<>();
         outstandingOrders = new HashMap<>();
         lastTradedPrice = 0;
     }
@@ -147,7 +142,6 @@ public class ExchangeHandler implements OrderBookHandler
     public void sendBalancingTrades(int needed, double basePrice, int ideal)
     {
         long orderID;
-        pendingOrders.put(basePrice, needed);
 
         //REMOVE, FOR TESTING ONLY
         if (needed > 0)

@@ -24,7 +24,7 @@ public class Main
         Symbol taco = Symbol.of(TACO);
         Symbol beef = Symbol.of(BEEF);
         Symbol tort = Symbol.of(TORT);
-//        Symbol ccy1 = Symbol.of(BOOK);
+
         ExchangeClient client = ExchangeClient.create(EXCHANGE_URL, Account.of(USERNAME), PASSWORD);
         client.start();
 
@@ -39,9 +39,6 @@ public class Main
         tacoHandler.setArbitrageMasterRef(arbitrageEngine);
         beefHandler.setArbitrageMasterRef(arbitrageEngine);
         tortHandler.setArbitrageMasterRef(arbitrageEngine);
-
-
-        //remote.subscribe(ccy1, new ExchangeHandler(remote, ccy1));
 
         remote.subscribe(taco, tacoHandler);
         remote.subscribe(beef, beefHandler);

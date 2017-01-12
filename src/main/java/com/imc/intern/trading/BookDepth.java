@@ -9,9 +9,6 @@ public class BookDepth
     private TreeMap<Double, Integer> bids = new TreeMap<>();
     private TreeMap<Double, Integer> asks = new TreeMap<>();
 
-
-    public BookDepth() {} // NAJ: default constructors are implied in java, don't need this
-
     public TreeMap<Double, Integer> getBookBids()
     {
         return bids;

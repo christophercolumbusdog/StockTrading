@@ -1,11 +1,8 @@
 package com.imc.intern.trading;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 public class ArbitrageEngine
 {
@@ -134,7 +131,6 @@ public class ArbitrageEngine
             lastTrade = System.currentTimeMillis();
         }
 
-//        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
 
     public boolean hasCriticalImbalance()
