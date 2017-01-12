@@ -1,22 +1,20 @@
 package com.imc.intern.trading;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.imc.intern.exchange.datamodel.api.Account;
-import com.imc.intern.exchange.datamodel.api.OwnTrade;
-import com.imc.intern.exchange.datamodel.api.Symbol;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 public class ArbitrageEngine
 {
     private ExchangeHandler exMain;
     private ExchangeHandler exDerivative1;
     private ExchangeHandler exDerivative2;
-    private double offset; // NAJ: not being used
 
     private int tacoIdealPos, beefIdealPos, tortIdealPos;
+    private long lastTrade;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -25,8 +23,8 @@ public class ArbitrageEngine
         exMain = e1;
         exDerivative1 = e2;
         exDerivative2 = e3;
-        offset = 0.1;
         tacoIdealPos = beefIdealPos = tortIdealPos = 0;
+        lastTrade = System.currentTimeMillis();
     }
 
     public enum Action
@@ -87,21 +85,12 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
-//        if (!isAllUpdated())
-//        {
-//            LOGGER.info("WAITING FOR BOOK UPDATE");
-//            return;
-//        }
-
+        if (System.currentTimeMillis() - lastTrade < 1000)
+            return;
         if (hasCriticalImbalance())
-        {
             return;
-        }
-
         if (exMain.hasOutstandingOrders() || exDerivative1.hasOutstandingOrders() || exDerivative2.hasOutstandingOrders())
-        {
             return;
-        }
 
         Action decision = calculateArbitrageOpportunity(exMain.getMyBook(), exDerivative1.getMyBook(), exDerivative2.getMyBook());
 
@@ -116,7 +105,6 @@ public class ArbitrageEngine
 
         if (decision == Action.TACO_TO_PARTS)
         {
-//            falsifyUpdatedStatus();
             int quantity = findMinimumQuantity(tacoAskVol, beefBidVol, tortBidVol);
             LOGGER.info("SENDING BID TRADE FOR " + quantity);
 
@@ -127,10 +115,11 @@ public class ArbitrageEngine
             tacoIdealPos += quantity;
             beefIdealPos -= quantity;
             tortIdealPos -= quantity;
+
+            lastTrade = System.currentTimeMillis();
         }
         else if (decision == Action.PARTS_TO_TACO)
         {
-//            falsifyUpdatedStatus();
             int quantity = findMinimumQuantity(tacoBidVol, beefAskVol, tortAskVol);
             LOGGER.info("SENDING ASK TRADE FOR " + quantity);
 
@@ -141,7 +130,11 @@ public class ArbitrageEngine
             tacoIdealPos -= quantity;
             beefIdealPos += quantity;
             tortIdealPos += quantity;
+
+            lastTrade = System.currentTimeMillis();
         }
+
+//        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
 
     public boolean hasCriticalImbalance()
@@ -215,15 +208,4 @@ public class ArbitrageEngine
         return Math.min(10, Math.min(a, Math.min(b, c)));
     }
 
-//    private void falsifyUpdatedStatus()
-//    {
-//        exMain.setUpdated(false);
-//        exDerivative1.setUpdated(false);
-//        exDerivative2.setUpdated(false);
-//    }
-//
-//    private boolean isAllUpdated()
-//    {
-//        return (exMain.isUpdated() && exDerivative1.isUpdated() && exDerivative2.isUpdated());
-//    }
 }
