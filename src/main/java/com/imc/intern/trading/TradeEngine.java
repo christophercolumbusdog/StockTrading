@@ -81,6 +81,16 @@ public class TradeEngine
         exchangeView.createOrder(book, activeBook.getHighestBid(), quantity, OrderType.IMMEDIATE_OR_CANCEL, Side.SELL);
     }
 
+    public long submitGTCBuyOrder(double price, int quantity)
+    {
+        return exchangeView.createOrder(book, price, quantity, OrderType.GOOD_TIL_CANCEL, Side.BUY);
+    }
+
+    public long submitGTCSellOrder(double price, int quantity)
+    {
+        return exchangeView.createOrder(book, price, quantity, OrderType.GOOD_TIL_CANCEL, Side.SELL);
+    }
+
     private void checkForBuyOp(double lowestSellPrice, int sellVol, double threshold)
     {
         if (sellVol > 0 && lowestSellPrice < threshold)

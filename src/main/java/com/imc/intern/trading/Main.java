@@ -2,7 +2,6 @@ package com.imc.intern.trading;
 
 import com.imc.intern.exchange.client.ExchangeClient;
 import com.imc.intern.exchange.client.RemoteExchangeView;
-import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.*;
 
 public class Main
@@ -47,9 +46,6 @@ public class Main
         remote.subscribe(taco, tacoHandler);
         remote.subscribe(beef, beefHandler);
         remote.subscribe(tort, tortHandler);
-
-
-        client.getExchangeView().createOrder(taco, 5000, 200, OrderType.GOOD_TIL_CANCEL, Side.SELL);
     }
 
 
