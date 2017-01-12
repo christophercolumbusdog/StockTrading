@@ -21,7 +21,7 @@ public class ArbitrageEngine
         exDerivative1 = e2;
         exDerivative2 = e3;
         tacoIdealPos = beefIdealPos = tortIdealPos = 0;
-        lastTrade = System.currentTimeMillis();
+        lastTrade = 0;
     }
 
     public enum Action
@@ -82,7 +82,7 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
-        if (System.currentTimeMillis() - lastTrade < 1000)
+        if (System.currentTimeMillis() - lastTrade < 30000)
             return;
         if (hasCriticalImbalance())
             return;
@@ -201,7 +201,7 @@ public class ArbitrageEngine
 
     public int findMinimumQuantity(int a, int b, int c)
     {
-        return Math.min(10, Math.min(a, Math.min(b, c)));
+        return Math.min(100, Math.min(a, Math.min(b, c)));
     }
 
 }

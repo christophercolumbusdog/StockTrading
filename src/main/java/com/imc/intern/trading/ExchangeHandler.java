@@ -1,6 +1,5 @@
 package com.imc.intern.trading;
 
-import com.imc.intern.exchange.client.RemoteExchangeView;
 import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.*;
 import com.imc.intern.exchange.datamodel.api.Error;
@@ -14,7 +13,7 @@ public class ExchangeHandler implements OrderBookHandler
 {
     // NAJ: You can remove old cold and reference it in the git history, please do so.
     private TradeEngine trader;
-    private BookDepth myBook = new BookDepth();
+    private BookDepth myBook;
     private ArbitrageEngine arbitrageMasterRef;
     private HashMap<Long, Integer> outstandingOrders;
 
@@ -23,13 +22,14 @@ public class ExchangeHandler implements OrderBookHandler
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public ExchangeHandler(RemoteExchangeView rev, Symbol sym)
+    public ExchangeHandler(TradeEngine trader, BookDepth myBook)
     {
-        trader = new TradeEngine(rev, sym);
+        this.trader = trader;
         arbitrageMasterRef = null;
         position = 0;
         outstandingOrders = new HashMap<>();
         lastTradedPrice = 0;
+        this.myBook = myBook;
     }
 
     public double getLastTradedPrice()
@@ -147,13 +147,13 @@ public class ExchangeHandler implements OrderBookHandler
         if (needed > 0)
         {
             LOGGER.info("BALANCING BY BUYING " + needed);
-            orderID = trader.submitGTCBuyOrder(basePrice + .1, needed);
+            orderID = trader.submitGTCBuyOrder(basePrice + .05, needed);
             position = ideal;
         }
         else
         {
             LOGGER.info("BALANCING BY SELLING " + (needed * -1));
-            orderID = trader.submitGTCSellOrder(basePrice - .1, needed * -1);
+            orderID = trader.submitGTCSellOrder(basePrice - .05, needed * -1);
             position = ideal;
         }
 
