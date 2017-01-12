@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class ExchangeHandler implements OrderBookHandler
@@ -19,15 +18,12 @@ public class ExchangeHandler implements OrderBookHandler
     private TradeEngine trader;
     private BookDepth myBook = new BookDepth();
     private ArbitrageEngine arbitrageMasterRef;
-    private String sym;
-    private HashSet<Long> outstandingOrders;
+    private HashMap<Long, Integer> outstandingOrders;
 
     private int position;
-    private double lastPriceAtPosition;
+    private double lastTradedPrice;
 
     private TreeMap<Double, Integer> pendingOrders;
-
-//    private boolean updated;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -35,22 +31,16 @@ public class ExchangeHandler implements OrderBookHandler
     {
         trader = new TradeEngine(rev, sym);
         arbitrageMasterRef = null;
-//        updated = false;
         position = 0;
-        lastPriceAtPosition = 0;
         pendingOrders = new TreeMap<>();
-        outstandingOrders = new HashSet<>();
+        outstandingOrders = new HashMap<>();
+        lastTradedPrice = 0;
     }
 
-//    public void setUpdated(boolean updated)
-//    {
-//        this.updated = updated;
-//    }
-
-//    public boolean isUpdated()
-//    {
-//        return updated;
-//    }
+    public double getLastTradedPrice()
+    {
+        return lastTradedPrice;
+    }
 
     public BookDepth getMyBook()
     {
@@ -72,11 +62,6 @@ public class ExchangeHandler implements OrderBookHandler
         return outstandingOrders.size() > 0;
     }
 
-    public TreeMap<Double, Integer> getPendingOrders()
-    {
-        return pendingOrders;
-    }
-
     public void setArbitrageMasterRef(ArbitrageEngine arbitrageMasterRef)
     {
         this.arbitrageMasterRef = arbitrageMasterRef;
@@ -89,19 +74,12 @@ public class ExchangeHandler implements OrderBookHandler
 
         if (outstandingOrders.size() > 0)
         {
-            LOGGER.info("PENDING TRADE FOR " + sym.toString());
+            LOGGER.info("PENDING TRADE FOR " + trader.getSymbol());
         }
 
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
-//        updated = true;
 
-        /*
-            DISABLED STANDARD HITTER, CAN BE RE-ENABLED AS NECESSARY. ARBITRAGE HANDLING TRADE.
-         */
-        //trader.bookChangeHitter(myBook);
-
-        //Checks arbitrage opportunity
         arbitrageMasterRef.checkArbitrage();
     }
 
@@ -116,9 +94,27 @@ public class ExchangeHandler implements OrderBookHandler
     {
         LOGGER.info("ORDER EXECUTED!!!");
 
-        if (outstandingOrders.contains(trade.getOrderId()))
+        lastTradedPrice = trade.getPrice();
+
+        if (outstandingOrders.containsKey(trade.getOrderId()))
         {
-            outstandingOrders.remove(trade.getOrderId());
+            int position = outstandingOrders.get(trade.getOrderId());
+
+            if (trade.getSide() == Side.BUY)
+            {
+                position -= trade.getVolume();
+            }
+            else
+            {
+                position += trade.getVolume();
+            }
+
+            if (position == 0)
+                outstandingOrders.remove(trade.getOrderId());
+            else
+                outstandingOrders.put(trade.getOrderId(), position);
+
+            return;
         }
 
         int ideal = arbitrageMasterRef.getIdealPosition(this);
@@ -141,12 +137,11 @@ public class ExchangeHandler implements OrderBookHandler
 
         if (needed != 0)
         {
+            LOGGER.info("TRADE INCOMPLETE, SENDING GTC ORDER...");
             sendBalancingTrades(needed, trade.getPrice(), ideal);
         }
 
         LOGGER.info("NEW POSITION " + position);
-
-        lastPriceAtPosition = trade.getPrice();
     }
 
     public void sendBalancingTrades(int needed, double basePrice, int ideal)
@@ -158,17 +153,17 @@ public class ExchangeHandler implements OrderBookHandler
         if (needed > 0)
         {
             LOGGER.info("BALANCING BY BUYING " + needed);
-            orderID = trader.submitGTCBuyOrder(basePrice + 1, needed);
+            orderID = trader.submitGTCBuyOrder(basePrice + .1, needed);
             position = ideal;
         }
         else
         {
             LOGGER.info("BALANCING BY SELLING " + (needed * -1));
-            orderID = trader.submitGTCSellOrder(basePrice - 1, needed * -1);
+            orderID = trader.submitGTCSellOrder(basePrice - .1, needed * -1);
             position = ideal;
         }
 
-        outstandingOrders.add(orderID);
+        outstandingOrders.put(orderID, needed);
     }
 
     //Called when any trade closes

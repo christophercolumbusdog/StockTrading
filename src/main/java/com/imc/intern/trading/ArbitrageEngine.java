@@ -154,17 +154,35 @@ public class ArbitrageEngine
 
             if (!exMain.hasOutstandingOrders())
             {
-                ;
+                int needed = tacoIdealPos - exMain.getPosition();
+                double targetPrice = exMain.getLastTradedPrice();
 
+                exMain.sendBalancingTrades(needed, targetPrice, tacoIdealPos);
             }
         }
         else if (Math.abs(beefIdealPos - exDerivative1.getPosition()) > 2)
         {
             imbalance = true;
+
+            if (!exDerivative1.hasOutstandingOrders())
+            {
+                int needed = beefIdealPos - exDerivative1.getPosition();
+                double targetPrice = exDerivative1.getLastTradedPrice();
+
+                exDerivative1.sendBalancingTrades(needed, targetPrice, beefIdealPos);
+            }
         }
         else if (Math.abs(tortIdealPos - exDerivative2.getPosition()) > 2)
         {
             imbalance = true;
+
+            if (!exDerivative2.hasOutstandingOrders())
+            {
+                int needed = tortIdealPos - exDerivative2.getPosition();
+                double targetPrice = exDerivative2.getLastTradedPrice();
+
+                exDerivative2.sendBalancingTrades(needed, targetPrice, tortIdealPos);
+            }
         }
 
         return imbalance;

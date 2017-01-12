@@ -9,7 +9,7 @@ public class Main
     private static final String EXCHANGE_URL = "tcp://54.227.125.23:61616";
     private static final String USERNAME = "ccygnus";
     private static final String PASSWORD = "height apartment tonight grain";
-    private static final String BOOK = "CCY1";
+    //private static final String BOOK = "CCY1";
 
     private static final String TACO = "TACO";
     private static final String TORT = "TORT";

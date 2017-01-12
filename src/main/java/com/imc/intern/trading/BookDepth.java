@@ -78,7 +78,7 @@ public class BookDepth
 
         tree = (s == Side.BUY) ? bids : asks;
 
-        int currentVolume = 0;
+        int currentVolume;
 
         if (tree.containsKey(price))
         {

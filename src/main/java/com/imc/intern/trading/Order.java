@@ -4,9 +4,6 @@ import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.OrderType;
 import com.imc.intern.exchange.datamodel.api.Symbol;
 
-/**
- * Created by imc on 10/01/2017.
- */
 public class Order
 {
     // NAJ: Usually, classes have private members. I would make these fields private and generate getters for them all.

@@ -2,7 +2,6 @@ package com.imc.intern.trading;
 
 import com.imc.intern.exchange.datamodel.Side;
 import com.imc.intern.exchange.datamodel.api.OrderType;
-import com.imc.intern.exchange.datamodel.api.RetailState;
 import com.imc.intern.exchange.datamodel.api.Symbol;
 import com.imc.intern.exchange.views.ExchangeView;
 import org.slf4j.Logger;
@@ -18,9 +17,6 @@ public class TradeEngine
     private ExchangeView exchangeView;
     private Symbol book;
 
-    private double TARGET_VALUE = 20;
-    private double OFFSET = 0.1;
-
     public TradeEngine(ExchangeView rev, Symbol s)
     {
         exchangeView = rev;
@@ -30,6 +26,8 @@ public class TradeEngine
 
     public void bookChangeHitter(BookDepth activeBook)
     {
+        double TARGET_VALUE = 20;
+        double OFFSET = 0.1;
         double lowestSellPrice = Double.MAX_VALUE;
         double highestBuyPrice = 0;
         int sellVol = 0;
@@ -109,5 +107,9 @@ public class TradeEngine
         }
     }
 
+    public String getSymbol()
+    {
+        return book.name();
+    }
 
 }
