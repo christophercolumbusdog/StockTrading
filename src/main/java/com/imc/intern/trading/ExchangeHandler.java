@@ -81,7 +81,9 @@ public class ExchangeHandler implements OrderBookHandler
         if (lastTradedPrice < 0.000001 && lastTradedPrice > -0.000001)
         {
             LOGGER.info("SETTING UP LAST TRADED PRICE FOR " + trader.getSymbol());
-            lastTradedPrice = myBook.getLowestAsk();
+
+            //try to get a good market price, based on the median of the spread
+            lastTradedPrice = (myBook.getLowestAsk() + myBook.getHighestBid()) / ((double)(2));
         }
 
         arbitrageMasterRef.checkArbitrage();
