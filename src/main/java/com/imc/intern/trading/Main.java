@@ -33,9 +33,13 @@ public class Main
 
         RemoteExchangeView remote = client.getExchangeView();
 
-        ExchangeHandler tacoHandler = new ExchangeHandler(new TradeEngine(remote, taco),  new BookDepth());
-        ExchangeHandler beefHandler = new ExchangeHandler(new TradeEngine(remote, beef), new BookDepth());
-        ExchangeHandler tortHandler = new ExchangeHandler(new TradeEngine(remote, tort), new BookDepth());
+        BookDepth tacoBook = new BookDepth();
+        BookDepth beefBook = new BookDepth();
+        BookDepth tortBook = new BookDepth();
+
+        ExchangeHandler tacoHandler = new ExchangeHandler(new TradeEngine(remote, taco), tacoBook);
+        ExchangeHandler beefHandler = new ExchangeHandler(new TradeEngine(remote, beef), beefBook);
+        ExchangeHandler tortHandler = new ExchangeHandler(new TradeEngine(remote, tort), tortBook);
 
         ArbitrageEngine arbitrageEngine = new ArbitrageEngine(tacoHandler, beefHandler, tortHandler);
 

@@ -17,6 +17,8 @@ public class ExchangeHandler implements OrderBookHandler
     private ArbitrageEngine arbitrageMasterRef;
     private HashMap<Long, Integer> outstandingOrders;
 
+    private int currentTradesSinceTime;
+
     private int position;
     private double lastTradedPrice;
 
@@ -29,6 +31,7 @@ public class ExchangeHandler implements OrderBookHandler
         position = 0;
         outstandingOrders = new HashMap<>();
         lastTradedPrice = 0;
+        currentTradesSinceTime = 0;
         this.myBook = myBook;
     }
 
@@ -143,19 +146,30 @@ public class ExchangeHandler implements OrderBookHandler
     {
         long orderID;
 
+        if (System.currentTimeMillis() % 31000 == 0)
+        {
+            currentTradesSinceTime = 0;
+        }
+
+        if (currentTradesSinceTime >= 12)
+            return;
+
         //REMOVE, FOR TESTING ONLY
         if (needed > 0)
         {
             LOGGER.info("BALANCING BY BUYING " + needed);
-            orderID = trader.submitGTCBuyOrder(basePrice + .05, needed);
-            position = ideal;
+            orderID = trader.submitGTCBuyOrder(basePrice + .00, needed);
         }
         else
         {
             LOGGER.info("BALANCING BY SELLING " + (needed * -1));
-            orderID = trader.submitGTCSellOrder(basePrice - .05, needed * -1);
-            position = ideal;
+            orderID = trader.submitGTCSellOrder(basePrice - .00, needed * -1);
         }
+
+        position = ideal;
+        ++currentTradesSinceTime;
+
+
 
         outstandingOrders.put(orderID, needed);
     }

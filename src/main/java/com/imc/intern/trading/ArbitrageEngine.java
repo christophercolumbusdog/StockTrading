@@ -82,7 +82,7 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
-        if (System.currentTimeMillis() - lastTrade < 30000)
+        if (System.currentTimeMillis() - lastTrade < 31000)
             return;
         if (hasCriticalImbalance())
             return;
