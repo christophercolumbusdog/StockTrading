@@ -15,10 +15,6 @@ public class Main
     private static final String TORT = "TORT";
     private static final String BEEF = "BEEF";
 
-    /*
-        ** Overall, looks like you're still in the process of refactoring your code. I'd continue this work. Obviously
-        * focus on functionality first, but early refactor can make later functionality easier.
-     */
     // mwang: Pretty much what we discussed yesterday. Functionally, this looks pretty good, but the ExchangeHandler
     // especially is taking care of a lot by itself. YOu should consider pulling dependencies out of ExchangeHandler
     // to their own classes.

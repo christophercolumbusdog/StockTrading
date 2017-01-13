@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 public class ExchangeHandler implements OrderBookHandler
 {
-    // NAJ: You can remove old cold and reference it in the git history, please do so.
     private TradeEngine trader;
     private BookDepth myBook;
     private ArbitrageEngine arbitrageMasterRef;
@@ -77,6 +76,13 @@ public class ExchangeHandler implements OrderBookHandler
 
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
+
+        //Ensures a valid last traded from for the first trade
+        if (lastTradedPrice < 0.000001 && lastTradedPrice > -0.000001)
+        {
+            LOGGER.info("SETTING UP LAST TRADED PRICE FOR " + trader.getSymbol());
+            lastTradedPrice = myBook.getLowestAsk();
+        }
 
         arbitrageMasterRef.checkArbitrage();
     }
@@ -158,12 +164,12 @@ public class ExchangeHandler implements OrderBookHandler
         if (needed > 0)
         {
             LOGGER.info("BALANCING BY BUYING " + needed);
-            orderID = trader.submitGTCBuyOrder(basePrice + .00, needed);
+            orderID = trader.submitGTCBuyOrder(basePrice + .00, needed); //.00 seems to work, was .05
         }
         else
         {
             LOGGER.info("BALANCING BY SELLING " + (needed * -1));
-            orderID = trader.submitGTCSellOrder(basePrice - .00, needed * -1);
+            orderID = trader.submitGTCSellOrder(basePrice - .00, needed * -1); //.00 seems to work, was .05
         }
 
         position = ideal;

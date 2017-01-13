@@ -12,8 +12,7 @@ public class ExchangeHandlerTest
 {
     private OwnTrade myTrade;
     private ArbitrageEngine engine;
-    private RemoteExchangeView remote;
-    private Symbol sym;
+    private TradeEngine trader;
 
     private ExchangeHandler handler;
 
@@ -22,10 +21,9 @@ public class ExchangeHandlerTest
     {
         myTrade = Mockito.mock(OwnTrade.class);
         engine = Mockito.mock(ArbitrageEngine.class);
-        remote = Mockito.mock(RemoteExchangeView.class);
-        sym = Symbol.of("CCY1");
+        trader = Mockito.mock(TradeEngine.class);
 
-        handler = new ExchangeHandler(new TradeEngine(remote, sym), new BookDepth());
+        handler = new ExchangeHandler(trader, new BookDepth());
 
         handler.setArbitrageMasterRef(engine);
     }
@@ -48,6 +46,8 @@ public class ExchangeHandlerTest
         double price = 23.4;
 
         handler.sendBalancingTrades(needed, price, ideal);
+
+        Mockito.verify(trader).submitGTCSellOrder(price, needed * -1);
     }
 
     @Test
@@ -57,5 +57,7 @@ public class ExchangeHandlerTest
         double price = 23.4;
 
         handler.sendBalancingTrades(needed, price, ideal);
+
+        Mockito.verify(trader).submitGTCBuyOrder(price, needed);
     }
 }
