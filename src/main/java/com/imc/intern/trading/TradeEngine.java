@@ -63,6 +63,11 @@ public class TradeEngine
 
     }
 
+    public void cancelTrade(long orderID)
+    {
+        exchangeView.cancelOrder(book, orderID);
+    }
+
     public void immediateBuyAttempt(BookDepth activeBook, int quantity)
     {
         //COULD use the "update" method of book correctness instead!!!!

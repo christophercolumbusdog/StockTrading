@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ExchangeHandler implements OrderBookHandler
 {
@@ -15,6 +16,7 @@ public class ExchangeHandler implements OrderBookHandler
     private BookDepth myBook;
     private ArbitrageEngine arbitrageMasterRef;
     private HashMap<Long, Integer> outstandingOrders;
+    private int balanceAttempts;
 
     private int currentTradesSinceTime;
 
@@ -31,6 +33,7 @@ public class ExchangeHandler implements OrderBookHandler
         outstandingOrders = new HashMap<>();
         lastTradedPrice = 0;
         currentTradesSinceTime = 0;
+        balanceAttempts = 0;
         this.myBook = myBook;
     }
 
@@ -72,7 +75,19 @@ public class ExchangeHandler implements OrderBookHandler
         if (outstandingOrders.size() > 0)
         {
             LOGGER.info("PENDING TRADE FOR " + trader.getSymbol());
+            balanceAttempts++;
+
+            if (balanceAttempts > 50)
+            {
+                LOGGER.info("PENDING TRADES FAILED, ATTEMPT TO FORCE BALANCE.............");
+                forceBalance();
+            }
         }
+        else
+        {
+            balanceAttempts = 0;
+        }
+
 
         //Refreshes the book based on the new retailState
         myBook.consumeRetailState(retailState);
@@ -89,6 +104,36 @@ public class ExchangeHandler implements OrderBookHandler
         arbitrageMasterRef.checkArbitrage();
     }
 
+    //EXPERIMENTAL
+    public void forceBalance()
+    {
+        balanceAttempts = 0;
+
+        HashMap<Long, Integer> newOutstanding = new HashMap<>();
+
+        for (Map.Entry<Long, Integer> entry : outstandingOrders.entrySet())
+        {
+            trader.cancelTrade(entry.getKey()); //WHAT IF CANCEL DOES NOT EXECUTE IN TIME?
+
+            long orderID;
+
+            if (entry.getValue() > 0)
+            {
+                LOGGER.info("BALANCING BY BUYING " + entry.getValue());
+                orderID = trader.submitGTCBuyOrder(myBook.getLowestAsk(), entry.getValue());
+            }
+            else
+            {
+                LOGGER.info("BALANCING BY SELLING " + (entry.getValue() * -1));
+                orderID = trader.submitGTCSellOrder(myBook.getHighestBid(), entry.getValue());
+            }
+
+            newOutstanding.put(orderID, entry.getValue());
+        }
+
+        outstandingOrders = newOutstanding;
+    }
+
     //Called when anything occurs with MY trades are updated
     public void handleExposures(ExposureUpdate exposures)
     {
@@ -98,7 +143,7 @@ public class ExchangeHandler implements OrderBookHandler
     //Called when my trade closes
     public void handleOwnTrade(OwnTrade trade)
     {
-        LOGGER.info("ORDER EXECUTED!!!");
+        LOGGER.info("ORDER EXECUTED!!! " + trade.toString());
 
         lastTradedPrice = trade.getPrice();
 
@@ -162,7 +207,6 @@ public class ExchangeHandler implements OrderBookHandler
         if (currentTradesSinceTime >= 12)
             return;
 
-        //REMOVE, FOR TESTING ONLY
         if (needed > 0)
         {
             LOGGER.info("BALANCING BY BUYING " + needed);
