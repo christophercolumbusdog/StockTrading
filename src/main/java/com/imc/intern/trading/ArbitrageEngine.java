@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 public class ArbitrageEngine
 {
+    private final long TIME_LIMIT = 11000;
+
     private ExchangeHandler exMain;
     private ExchangeHandler exDerivative1;
     private ExchangeHandler exDerivative2;
@@ -82,7 +84,7 @@ public class ArbitrageEngine
 
     public void checkArbitrage()
     {
-        if (System.currentTimeMillis() - lastTrade < 31000)
+        if (System.currentTimeMillis() - lastTrade < TIME_LIMIT)
             return;
         if (hasCriticalImbalance())
             return;

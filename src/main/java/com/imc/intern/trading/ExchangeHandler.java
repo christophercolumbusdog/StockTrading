@@ -10,8 +10,18 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+    In an ideal world, this class needs to be broken up into other classes I have or could add.
+    Since this class has access to the trigger events, I have kept a lot of code here in emergency testing
+    on friday, but I would have wanted to break into a position manager and trader classes.
+    For example, the "forceBalance" and associated functions that handle flattening should reside outside of this class.
+    But, time has gotten the better of me.
+ */
+
 public class ExchangeHandler implements OrderBookHandler
 {
+    private final long TIME_LIMIT = 11000;
+
     private TradeEngine trader;
     private BookDepth myBook;
     private ArbitrageEngine arbitrageMasterRef;
@@ -74,7 +84,7 @@ public class ExchangeHandler implements OrderBookHandler
 
         if (outstandingOrders.size() > 0)
         {
-            LOGGER.info("PENDING TRADE FOR " + trader.getSymbol());
+            LOGGER.info("PENDING TRADE FOR " + trader.getSymbol() + " attempts: " + balanceAttempts);
             balanceAttempts++;
 
             if (balanceAttempts > 50)
@@ -104,7 +114,7 @@ public class ExchangeHandler implements OrderBookHandler
         arbitrageMasterRef.checkArbitrage();
     }
 
-    //EXPERIMENTAL
+    //EXPERIMENTAL, also should be moved to position manager or arbitrage engine
     public void forceBalance()
     {
         balanceAttempts = 0;
@@ -125,7 +135,7 @@ public class ExchangeHandler implements OrderBookHandler
             else
             {
                 LOGGER.info("BALANCING BY SELLING " + (entry.getValue() * -1));
-                orderID = trader.submitGTCSellOrder(myBook.getHighestBid(), entry.getValue());
+                orderID = trader.submitGTCSellOrder(myBook.getHighestBid(), entry.getValue() * -1);
             }
 
             newOutstanding.put(orderID, entry.getValue());
@@ -199,7 +209,7 @@ public class ExchangeHandler implements OrderBookHandler
     {
         long orderID;
 
-        if (System.currentTimeMillis() % 31000 == 0)
+        if (System.currentTimeMillis() % TIME_LIMIT == 0)
         {
             currentTradesSinceTime = 0;
         }
